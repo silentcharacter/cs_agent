@@ -11,7 +11,7 @@ The agent is designed to provide excellent customer service, assist customers wi
 
 ### Agent Architecture
 
-![Customer Service Agent Workflow](architecture_diagram.png)
+![Customer Service Agent Workflow](architecture_diagram.jpg)
 
 
 The agent is built using a multi-modal architecture, combining text and video inputs to provide a rich and interactive experience. It mocks interactions with various tools and services, including a product catalog, inventory management, order processing, and appointment scheduling systems. The agent also utilizes a session management system to maintain context across interactions and personalize the customer experience.
