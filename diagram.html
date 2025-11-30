@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Multi-Agent System</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-primary: #30363d;
+            --border-accent: #58a6ff;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --accent-orange: #f0883e;
+            --accent-pink: #f778ba;
+            --accent-yellow: #d29922;
+            --accent-cyan: #39c5cf;
+            --accent-red: #f85149;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background effects */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-effects::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(88, 166, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(163, 113, 247, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(57, 197, 207, 0.04) 0%, transparent 50%);
+            animation: backgroundShift 30s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -5%) rotate(3deg); }
+        }
+
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(88, 166, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(88, 166, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-primary);
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, transparent 100%);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .framework-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .framework-badge span {
+            color: var(--accent-green);
+        }
+
+        /* Main container */
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Agent cards base */
+        .agent-card {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 17px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 40%, var(--glow-color, var(--accent-blue)) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .agent-title {
+            flex: 1;
+        }
+
+        .agent-title h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.15rem;
+        }
+
+        .agent-title span {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        .agent-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* Tools section */
+        .tools-section {
+            margin-top: 1rem;
+        }
+
+        .tools-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .tool-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.7rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .tool-chip:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .tool-chip::before {
+            content: '⚡';
+            font-size: 0.65rem;
+        }
+
+        /* Root agent section */
+        .root-section {
+            margin-bottom: 3rem;
+        }
+
+        .root-agent {
+            --glow-color: var(--accent-blue);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 2px solid var(--accent-blue);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(88, 166, 255, 0.05) 100%);
+        }
+
+        .root-agent .agent-icon {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
+            color: var(--bg-primary);
+        }
+
+        /* Connection lines */
+        .connection-area {
+            position: relative;
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+
+        .connection-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .connection-path {
+            fill: none;
+            stroke: var(--border-primary);
+            stroke-width: 2;
+            stroke-dasharray: 8 4;
+            animation: flowDown 1.5s linear infinite;
+        }
+
+        @keyframes flowDown {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        .connection-dot {
+            fill: var(--accent-blue);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; r: 4; }
+            50% { opacity: 1; r: 6; }
+        }
+
+        /* Sub-agents grid */
+        .sub-agents-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .sub-agents-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Billing agent */
+        .billing-agent {
+            --glow-color: var(--accent-green);
+        }
+
+        .billing-agent .agent-icon {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #2ea043 100%);
+            color: var(--bg-primary);
+        }
+
+        /* Order agent */
+        .order-agent {
+            --glow-color: var(--accent-orange);
+        }
+
+        .order-agent .agent-icon {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #db6d28 100%);
+            color: var(--bg-primary);
+        }
+
+        /* Technical support agent */
+        .tech-agent {
+            --glow-color: var(--accent-purple);
+        }
+
+        .tech-agent .agent-icon {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, #8957e5 100%);
+            color: var(--bg-primary);
+        }
+
+        /* Escalation agent */
+        .escalation-agent {
+            --glow-color: var(--accent-red);
+        }
+
+        .escalation-agent .agent-icon {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #da3633 100%);
+            color: var(--bg-primary);
+        }
+
+        /* Agent type badge */
+        .agent-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.6rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: auto;
+        }
+
+        .agent-type.sequential { color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .agent-type.parallel { color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .agent-type.llm { color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+
+        /* Technical support detail section */
+        .tech-detail-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 20px;
+        }
+
+        .tech-detail-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .tech-detail-title h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-detail-title p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .sequential-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .flow-step {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Parallel agents container */
+        .parallel-container {
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--accent-cyan);
+            border-radius: 16px;
+            padding: 1.25rem;
+        }
+
+        .parallel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .parallel-icon {
+            font-size: 1.1rem;
+        }
+
+        .parallel-header span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+        }
+
+        .parallel-agents {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .mini-agent {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .mini-agent:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(4px);
+        }
+
+        .mini-agent-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-icon {
+            font-size: 1rem;
+        }
+
+        .mini-agent-header h4 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .mini-agent p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-tool {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.5rem;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Arrow between steps */
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .flow-arrow svg {
+            width: 48px;
+            height: 48px;
+            color: var(--accent-purple);
+        }
+
+        /* Synthesizer card */
+        .synthesizer-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-purple);
+            border-radius: 16px;
+            padding: 1.25rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .synthesizer-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .synthesizer-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .input-vars {
+            margin-bottom: 1rem;
+        }
+
+        .input-vars-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-var {
+            display: block;
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+            margin-bottom: 0.35rem;
+        }
+
+        /* Legend */
+        .legend {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+        }
+
+        .legend h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+        }
+
+        .legend-item span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sub-agents-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sequential-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .flow-step {
+                max-width: 100%;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .sub-agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animations */
+        .agent-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .agent-card:nth-child(1) { animation-delay: 0.1s; }
+        .agent-card:nth-child(2) { animation-delay: 0.2s; }
+        .agent-card:nth-child(3) { animation-delay: 0.3s; }
+        .agent-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .root-agent {
+            animation: fadeInDown 0.6s ease forwards;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-effects">
+        <div class="grid-pattern"></div>
+    </div>
+
+    <header>
+        <h1>Customer Support Multi-Agent System</h1>
+        <p>Intelligent customer service automation with specialized agents</p>
+        <div class="framework-badge">
+            <span>🤖</span> Built with <span>Google ADK</span> (Agent Development Kit)
+        </div>
+    </header>
+
+    <main>
+        <!-- Root Agent -->
+        <section class="root-section">
+            <div class="agent-card root-agent">
+                <div class="agent-header">
+                    <div class="agent-icon">🎯</div>
+                    <div class="agent-title">
+                        <h3>HelpDeskCoordinator</h3>
+                        <span>gemini-2.0-flash-lite</span>
+                    </div>
+                    <div class="agent-type llm">LLM Agent</div>
+                </div>
+                <p class="agent-description">
+                    Main entry point for all support requests. Routes conversations to specialized agents based on customer intent. Handles greetings, gathers user context, and provides seamless handoffs.
+                </p>
+                <div class="tools-section">
+                    <div class="tools-label">Tools</div>
+                    <div class="tools-list">
+                        <span class="tool-chip">get_user_context</span>
+                        <span class="tool-chip">get_ticket_status</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connection Lines -->
+        <div class="connection-area">
+            <svg class="connection-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+                <!-- Center line down -->
+                <path class="connection-path" d="M500 0 L500 40"/>
+                
+                <!-- Branches to each agent -->
+                <path class="connection-path" d="M500 40 L125 40 L125 80"/>
+                <path class="connection-path" d="M500 40 L375 40 L375 80"/>
+                <path class="connection-path" d="M500 40 L625 40 L625 80"/>
+                <path class="connection-path" d="M500 40 L875 40 L875 80"/>
+                
+                <!-- Animated dots -->
+                <circle class="connection-dot" cx="500" cy="20" r="4"/>
+                <circle class="connection-dot" cx="125" cy="60" r="4" style="animation-delay: 0.3s"/>
+                <circle class="connection-dot" cx="375" cy="60" r="4" style="animation-delay: 0.5s"/>
+                <circle class="connection-dot" cx="625" cy="60" r="4" style="animation-delay: 0.7s"/>
+                <circle class="connection-dot" cx="875" cy="60" r="4" style="animation-delay: 0.9s"/>
+            </svg>
+        </div>
+
+        <!-- Sub-agents -->
+        <section class="sub-agents-section">
+            <div class="section-title">
+                <h2>Specialized Agents</h2>
+            </div>
+            <div class="sub-agents-grid">
+                <!-- Billing Agent -->
+                <div class="agent-card billing-agent">
+                    <div class="agent-header">
+                        <div class="agent-icon">💳</div>
+                        <div class="agent-title">
+                            <h3>Billing</h3>
+                            <span>gemini-2.5-flash-lite</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">
+                        Handles all billing-related inquiries including payment issues, subscription management, and invoice questions.
+                    </p>
+                    <div class="tools-section">
+                        <div class="tools-label">Capabilities</div>
+                        <div class="tools-list">
+                            <span class="tool-chip">Billing FAQ</span>
+                            <span class="tool-chip">→ Escalation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Agent -->
+                <div class="agent-card order-agent">
+                    <div class="agent-header">
+                        <div class="agent-icon">📦</div>
+                        <div class="agent-title">
+                            <h3>Order</h3>
+                            <span>gemini-2.5-flash-lite</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">
+                        Manages order-related queries including status tracking, shipping information, and refund requests.
+                    </p>
+                    <div class="tools-section">
+                        <div class="tools-label">Tools</div>
+                        <div class="tools-list">
+                            <span class="tool-chip">get_order_status</span>
+                            <span class="tool-chip">→ Escalation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Support Agent -->
+                <div class="agent-card tech-agent">
+                    <div class="agent-header">
+                        <div class="agent-icon">🔧</div>
+                        <div class="agent-title">
+                            <h3>Technical Support</h3>
+                            <span>SequentialAgent</span>
+                        </div>
+                        <div class="agent-type sequential">Sequential</div>
+                    </div>
+                    <p class="agent-description">
+                        Complex technical troubleshooting with parallel information gathering from multiple sources, then synthesizes solutions.
+                    </p>
+                    <div class="tools-section">
+                        <div class="tools-label">Sub-agents</div>
+                        <div class="tools-list">
+                            <span class="tool-chip">ParallelAgent</span>
+                            <span class="tool-chip">DiagnosisSynthesizer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Escalation Agent -->
+                <div class="agent-card escalation-agent">
+                    <div class="agent-header">
+                        <div class="agent-icon">🚨</div>
+                        <div class="agent-title">
+                            <h3>Escalation</h3>
+                            <span>gemini-2.5-flash-lite</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">
+                        Creates support tickets for human review. Handles cases requiring human judgment or when automated solutions fail.
+                    </p>
+                    <div class="tools-section">
+                        <div class="tools-label">Tools</div>
+                        <div class="tools-list">
+                            <span class="tool-chip">create_ticket</span>
+                            <span class="tool-chip">assign_to_team</span>
+                            <span class="tool-chip">get_ticket_status</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Support Detail -->
+        <section class="tech-detail-section">
+            <div class="tech-detail-title">
+                <h2>🔧 Technical Support Agent — Deep Dive</h2>
+                <p>A SequentialAgent that orchestrates parallel information gathering followed by intelligent diagnosis</p>
+            </div>
+
+            <div class="sequential-flow">
+                <!-- Step 1: Parallel Info Gathering -->
+                <div class="flow-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Parallel Information Gathering</div>
+                    </div>
+                    <div class="parallel-container">
+                        <div class="parallel-header">
+                            <span class="parallel-icon">⚡</span>
+                            <span>ParallelAgent — Runs simultaneously</span>
+                        </div>
+                        <div class="parallel-agents">
+                            <div class="mini-agent">
+                                <div class="mini-agent-header">
+                                    <span class="mini-icon">🔍</span>
+                                    <h4>Google Search Agent</h4>
+                                </div>
+                                <p>Searches the web for similar issues and solutions</p>
+                                <span class="mini-tool">google_search</span>
+                            </div>
+                            <div class="mini-agent">
+                                <div class="mini-agent-header">
+                                    <span class="mini-icon">📚</span>
+                                    <h4>KB Search Agent</h4>
+                                </div>
+                                <p>Searches internal knowledge base for documentation</p>
+                                <span class="mini-tool">search_knowledge_base</span>
+                            </div>
+                            <div class="mini-agent">
+                                <div class="mini-agent-header">
+                                    <span class="mini-icon">🎫</span>
+                                    <h4>Ticket Search Agent</h4>
+                                </div>
+                                <p>Finds similar resolved support tickets</p>
+                                <span class="mini-tool">search_similar_tickets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+
+                <!-- Step 2: Diagnosis Synthesizer -->
+                <div class="flow-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Diagnosis & Solution</div>
+                    </div>
+                    <div class="synthesizer-card">
+                        <h4>🧠 Diagnosis Synthesizer</h4>
+                        <p>
+                            Combines all gathered information to identify the root cause and generate comprehensive, step-by-step solutions for the user.
+                        </p>
+                        <div class="input-vars">
+                            <div class="input-vars-label">Session State Inputs</div>
+                            <code class="input-var">{google_search_result}</code>
+                            <code class="input-var">{kb_search_result}</code>
+                            <code class="input-var">{similar_tickets_result}</code>
+                        </div>
+                        <div class="tools-section">
+                            <div class="tools-label">Tool</div>
+                            <div class="tools-list">
+                                <span class="tool-chip">generate_solution_steps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>Agent Types</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-yellow);"></div>
+                    <span>LLM Agent — Direct language model interaction</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-purple);"></div>
+                    <span>Sequential Agent — Executes sub-agents in order</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-cyan);"></div>
+                    <span>Parallel Agent — Executes sub-agents simultaneously</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-blue);"></div>
+                    <span>Router Agent — Coordinates and delegates to specialists</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+
