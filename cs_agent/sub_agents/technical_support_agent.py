@@ -2,8 +2,8 @@
 Specialist Agent - Technical Expert with Parallel Information Gathering
 
 Uses ParallelAgent pattern to simultaneously:
-- Search internet for solutions  
-- Search knowledge base for solutions  
+- Search internet for solutions
+- Search knowledge base for solutions
 - Find similar resolved tickets
 
 Then synthesizes all results into a comprehensive diagnosis.
@@ -106,7 +106,7 @@ parallel_info_gathering = ParallelAgent(
 )
 
 
-    diagnosis_synthesizer = LlmAgent(
+diagnosis_synthesizer = LlmAgent(
     name="diagnosis_synthesizer",
     model="gemini-2.5-flash-lite",
     description="Synthesizes information from parallel searches into a comprehensive diagnosis.",

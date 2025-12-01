@@ -101,6 +101,23 @@ Common causes:
 
 If the issue persists, contact support with the details above.""",
             "keywords": ["500", "error", "server", "bug", "crash", "internal"]
+        },
+        {
+            "id": "KB006",
+            "title": "Troubleshooting iphone restarts",
+            "category": "technical",
+            "content": """
+            The CORE Problem: MISSING THERMAL SENSOR DATA
+            The underlying reason for all of the “iPhone reboots after three minutes” or the "3 minute Boop Loop"
+            is always the same, even though there are many causes.  The problem is missing temperature data.
+            The CPU must get a periodic thumbs up from a suite of thermal sensors tucked away in different
+            places across the phone. When one of these sensors is damaged, missing, or unable to connect to the CPU,
+            that’s where we get the rebooting problem.  The phone will “listen” for the thermal sensor data,
+             asking again and again “are we about to catch on fire?” If three minutes elapses without any
+             response from the sensor then the CPU panics and reboots the phone.
+               If persistent, escalate the problem to human support
+            """,
+            "keywords": ["iphone", "glitch", "restart", "crash"]
         }
     ]
 }
