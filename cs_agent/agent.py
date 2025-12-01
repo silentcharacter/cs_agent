@@ -4,6 +4,30 @@ from .tools.ticket_system import get_ticket_status
 from .tools.user_context import get_user_context
 import logging
 
+"""
+HelpDeskCoordinator - Root Agent
+
+This is the main entry point for the customer support system. HelpDeskCoordinator
+acts as a front desk operator that greets users, understands their needs, and
+routes requests to the appropriate specialist sub-agent. 
+
+It uses LLM Orchestrator pattern of multi-agent architecture.
+
+Sub-agents:
+    - billing_agent: Handles billing and payment inquiries
+    - order_agent: Handles order status, shipping, and refund questions
+    - technical_support_agent: Investigates technical issues using KB, search, and ticket history
+    - escalation_agent: Creates support tickets for human review when automated help fails
+
+Tools:
+    - get_user_context: Retrieves user account info and support history
+    - get_ticket_status: Checks status of existing support tickets
+
+The agent can handle simple queries directly (greetings, account info, ticket status)
+and delegates complex issues to specialists. Escalation is used as a last resort
+when automated solutions don't resolve the customer's problem.
+"""
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 

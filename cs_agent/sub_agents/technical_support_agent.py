@@ -8,6 +8,9 @@ Uses ParallelAgent pattern to simultaneously:
 
 Then synthesizes all results into a comprehensive diagnosis.
 
+This agent is responsible for investigating technical issues.
+It can use Google search, knowledge base, and similar tickets to find solutions.
+It can also escalate to human support if needed.
 """
 
 from google.adk.agents import Agent, LlmAgent, ParallelAgent, SequentialAgent
@@ -103,7 +106,7 @@ parallel_info_gathering = ParallelAgent(
 )
 
 
-diagnosis_synthesizer = LlmAgent(
+    diagnosis_synthesizer = LlmAgent(
     name="diagnosis_synthesizer",
     model="gemini-2.5-flash-lite",
     description="Synthesizes information from parallel searches into a comprehensive diagnosis.",

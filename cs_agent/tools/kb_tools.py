@@ -105,18 +105,6 @@ If the issue persists, contact support with the details above.""",
     ]
 }
 
-# FAQ quick answers
-FAQ_DATABASE = {
-    "password reset": "You can reset your password at the login page by clicking 'Forgot Password' and following the email instructions.",
-    "api rate limit": "Rate limits are: Standard (100/min), Pro (1000/min), Enterprise (custom). Check headers for X-RateLimit-Remaining.",
-    "webhook timeout": "Webhooks timeout after 30 seconds. Ensure your endpoint responds with 200 OK quickly. Process heavy operations asynchronously.",
-    "billing cycle": "Billing occurs on the 1st of each month. Changes are prorated.",
-    "cancel subscription": "Go to Settings > Billing > Manage Plan > Cancel. You'll retain access until the end of your billing period.",
-    "api key": "Generate API keys at Settings > API Keys. Keep them secure and never share in public repositories.",
-    "supported browsers": "We support the latest versions of Chrome, Firefox, Safari, and Edge.",
-    "data export": "Export your data from Settings > Account > Export Data. Processing may take up to 24 hours for large accounts."
-}
-
 
 def search_knowledge_base(query: str, tool_context: ToolContext, max_results: int = 3) -> Dict:
     """
@@ -193,54 +181,3 @@ def search_knowledge_base(query: str, tool_context: ToolContext, max_results: in
     }
 
 
-def get_faq_answer(question: str, tool_context: ToolContext) -> Dict:
-    """
-    Gets a quick answer from the FAQ database for common questions.
-    
-    Args:
-        question: The question to look up (e.g., "how to reset password")
-        tool_context: ToolContext for session state access
-    
-    Returns:
-        dict: Contains 'status' and either 'answer' if found or 
-              'message' if no FAQ match exists.
-    """
-    print(f"--- Tool: get_faq_answer called with question: '{question}' ---")
-    
-    question_lower = question.lower()
-    
-    # Direct match
-    for topic, answer in FAQ_DATABASE.items():
-        if topic in question_lower:
-            print(f"--- Tool: Found FAQ match for topic: '{topic}' ---")
-            return {
-                "status": "found",
-                "topic": topic,
-                "answer": answer
-            }
-    
-    # Fuzzy match - check if multiple words match
-    question_words = set(question_lower.split())
-    best_match = None
-    best_score = 0
-    
-    for topic, answer in FAQ_DATABASE.items():
-        topic_words = set(topic.split())
-        overlap = len(question_words.intersection(topic_words))
-        if overlap > best_score:
-            best_score = overlap
-            best_match = (topic, answer)
-    
-    if best_match and best_score >= 1:
-        print(f"--- Tool: Found fuzzy FAQ match for topic: '{best_match[0]}' ---")
-        return {
-            "status": "found",
-            "topic": best_match[0],
-            "answer": best_match[1]
-        }
-    
-    print("--- Tool: No FAQ match found ---")
-    return {
-        "status": "not_found",
-        "message": "No FAQ entry found for this question. Try searching the knowledge base for more detailed articles."
-    }

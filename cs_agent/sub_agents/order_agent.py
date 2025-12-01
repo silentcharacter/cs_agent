@@ -1,3 +1,11 @@
+"""
+Order Agent - Handles order inquiries
+
+This agent is responsible for handling order inquiries.
+It can answer questions about order status, shipping, refunds, etc.
+It can also escalate to human support if needed.
+"""
+
 from google.adk.agents import LlmAgent
 from .escalation_agent import escalation_agent
 from ..tools.order_tools import get_order_status

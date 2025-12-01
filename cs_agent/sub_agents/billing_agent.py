@@ -1,6 +1,15 @@
 from google.adk.agents import LlmAgent
 from .escalation_agent import escalation_agent
 
+"""
+Billing Agent - Handles billing and payment inquiries
+
+This agent is responsible for handling billing and payment inquiries.
+It can answer questions about billing, payment, and subscription management.
+It can also create support tickets for billing issues.
+It can also escalate to human support if needed.
+"""
+
 billing_agent = LlmAgent(
     name="Billing", 
     model="gemini-2.5-flash-lite",
