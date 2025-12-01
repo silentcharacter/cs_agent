@@ -132,7 +132,7 @@ Built in tools used:
 
     ```bash
     git clone https://github.com/silentcharacter/cs_agent
-    cd ...
+    cd cs_agent
     ```
 
 3. Install dependencies:
@@ -175,19 +175,18 @@ from the root project directory:
 
 Evaluation tests assess the overall performance and capabilities of the agent in a holistic manner.
     
-- Run Evaluation Tests:
+Run Evaluation Tests:
 
-   ```bash
-    adk eval cs_agent cs_agent/cs_agent_evalset.evalset.json --config_file_path=cs_agent/test_config.json --print_detailed_results
-   ```
+```bash
+adk eval cs_agent cs_agent/cs_agent_evalset.evalset.json --config_file_path=cs_agent/test_config.json --print_detailed_results
+```
 
 
 ## Deployment on Google Agent Engine
 
--
-    ```bash
-    adk deploy agent_engine cs_agent --agent_engine_config_file=cs_agent/.agent_engine_config.json
-    ```
+```bash
+adk deploy agent_engine cs_agent --agent_engine_config_file=cs_agent/.agent_engine_config.json
+```
 
 ### Testing deployment
 
@@ -219,12 +218,11 @@ for event in remote_agent.stream_query(
 
 ### Cleanup
 
--
-    ```bash
-    export GOOGLE_CLOUD_PROJECT = <>
-    export GOOGLE_CLOUD_LOCATION = <>
-    python deployment/cleanup.py
-    ```
+```bash
+export GOOGLE_CLOUD_PROJECT = <>
+export GOOGLE_CLOUD_LOCATION = <>
+python deployment/cleanup.py
+```
 
 
 ## Project Structure
