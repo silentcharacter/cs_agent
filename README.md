@@ -26,7 +26,7 @@ AI agents offer a promising solution to this challenge. Unlike traditional chatb
 
 ### Agent Architecture
 
-![Customer Service Agent Workflow](architecture_diagram.jpg)
+![Customer Support Agent Workflow](architecture_diagram.jpg)
 
 
 The solution is built using multi-agent architecture. It mocks interactions with various tools and services, including CRM, order management, ticket tracking system and knowledge base. The agent also utilizes a session management system to maintain context across interactions and personalize the customer experience.
@@ -104,6 +104,8 @@ Built in tools used:
 
 - `Google Search`
 
+### Workflow
+![workflow.png](workflow.png)
 
 ## Setup and Installations
 
