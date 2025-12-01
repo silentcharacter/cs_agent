@@ -1,0 +1,268 @@
+{
+  "eval_set_id": "cs_agent_evalset",
+  "name": "cs_agent_evalset",
+  "eval_cases": [
+    {
+      "eval_id": "hi_case",
+      "conversation": [
+        {
+          "invocation_id": "e-1f826eea-ec93-4b62-b076-5c40f1d81223",
+          "user_content": {
+            "parts": [
+              {
+                "text": "hi"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "Hi Jack, welcome to our support. How can I assist you today?\n"
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "invocation_events": [
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "id": "adk-7c7bd6f8-566f-4c27-8f49-95dbc1c89f7c",
+                        "args": {},
+                        "name": "get_user_context"
+                      }
+                    }
+                  ],
+                  "role": "model"
+                }
+              },
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "id": "adk-7c7bd6f8-566f-4c27-8f49-95dbc1c89f7c",
+                        "name": "get_user_context",
+                        "response": {
+                          "status": "success",
+                          "user": {
+                            "name": "Jack Sparrow",
+                            "email": "demo@example.com",
+                            "plan": "Standard",
+                            "account_status": "active"
+                          },
+                          "support_context": {
+                            "recent_tickets": [
+                              "TICKET-789"
+                            ],
+                            "ticket_count": 1
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "role": "user"
+                }
+              }
+            ]
+          },
+          "creation_timestamp": 1764564968.988683
+        }
+      ],
+      "session_input": {
+        "app_name": "cs_agent",
+        "user_id": "user",
+        "state": {
+          "google_search_result": "",
+          "kb_search_result": "",
+          "similar_tickets_result": ""
+        }
+      },
+      "creation_timestamp": 1764564994.727848
+    },
+    {
+      "eval_id": "order_status_case",
+      "conversation": [
+        {
+          "invocation_id": "e-d0e66288-b965-4047-a9a6-0aaeb013cfc8",
+          "user_content": {
+            "parts": [
+              {
+                "text": "i want to check status of my order"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "Hello Jack Sparrow, how can I assist you today? I see you have a recent ticket, TICKET-789. What is your order number? I can check the status for you. Or, I can help you with anything else.\n"
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "invocation_events": [
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "id": "adk-50710d14-bc6d-417f-b254-93b6f88d1f78",
+                        "args": {},
+                        "name": "get_user_context"
+                      }
+                    }
+                  ],
+                  "role": "model"
+                }
+              },
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "id": "adk-50710d14-bc6d-417f-b254-93b6f88d1f78",
+                        "name": "get_user_context",
+                        "response": {
+                          "status": "success",
+                          "user": {
+                            "name": "Jack Sparrow",
+                            "email": "demo@example.com",
+                            "plan": "Standard",
+                            "account_status": "active"
+                          },
+                          "support_context": {
+                            "recent_tickets": [
+                              "TICKET-789"
+                            ],
+                            "ticket_count": 1
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "role": "user"
+                }
+              }
+            ]
+          },
+          "creation_timestamp": 1764565294.488922
+        },
+        {
+          "invocation_id": "e-8b81b749-3db2-4a0b-8141-57200b33bad8",
+          "user_content": {
+            "parts": [
+              {
+                "text": "order number is 101"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "I can see that your order, 101 (Smart Speaker), has been delivered."
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "invocation_events": [
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "I can certainly help you with that! Let me get you over to the Order team. They'll be able to help you with the status of order 101.\n"
+                    },
+                    {
+                      "function_call": {
+                        "id": "adk-3112d7a9-2791-4987-b25c-573ed645487a",
+                        "args": {
+                          "agent_name": "Order"
+                        },
+                        "name": "transfer_to_agent"
+                      }
+                    }
+                  ],
+                  "role": "model"
+                }
+              },
+              {
+                "author": "HelpDeskCoordinator",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "id": "adk-3112d7a9-2791-4987-b25c-573ed645487a",
+                        "name": "transfer_to_agent",
+                        "response": {
+                          "result": null
+                        }
+                      }
+                    }
+                  ],
+                  "role": "user"
+                }
+              },
+              {
+                "author": "Order",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "id": "adk-0242c33a-760d-424f-860a-56423d236dee",
+                        "args": {
+                          "order_id": "101"
+                        },
+                        "name": "get_order_status"
+                      }
+                    }
+                  ],
+                  "role": "model"
+                }
+              },
+              {
+                "author": "Order",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "id": "adk-0242c33a-760d-424f-860a-56423d236dee",
+                        "name": "get_order_status",
+                        "response": {
+                          "result": "Order 101 (Smart Speaker): Status - Delivered."
+                        }
+                      }
+                    }
+                  ],
+                  "role": "user"
+                }
+              }
+            ]
+          },
+          "creation_timestamp": 1764565305.841158
+        }
+      ],
+      "session_input": {
+        "app_name": "cs_agent",
+        "user_id": "user",
+        "state": {
+          "google_search_result": "",
+          "kb_search_result": "",
+          "similar_tickets_result": ""
+        }
+      },
+      "creation_timestamp": 1764565326.825758
+    }
+  ],
+  "creation_timestamp": 1733068800.0
+}

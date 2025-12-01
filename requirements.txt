@@ -1,3 +1,4 @@
 google-adk
 opentelemetry-instrumentation-google-genai
 pytest
+google-adk[eval]>=1.16.0

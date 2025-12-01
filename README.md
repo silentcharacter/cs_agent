@@ -81,7 +81,7 @@ The agent has access to the following tools:
 2.  Install dependencies:
 
     ```bash
-    uv sync
+    pip install -r requirements.txt
     ```
 
 3.  Set up Google Cloud credentials:
@@ -116,14 +116,14 @@ from the root project directory:
 1.  Run agent in CLI:
 
     ```bash
-    adk run customer_service
+    adk run cs_agent
     ```
 
 2.  Run agent with ADK Web UI:
     ```bash
     adk web
     ```
-    Select the customer_service from the dropdown
+    Select the cs_agent from the dropdown
 
 
 
@@ -136,8 +136,7 @@ Evaluation tests assess the overall performance and capabilities of the agent in
 1.  **Run Evaluation Tests:**
 
     ```bash
-    uv sync --dev
-    uv run pytest eval
+    adk eval cs_agent cs_agent/cs_agent_evalset.evalset.json --config_file_path=cs_agent/test_config.json --print_detailed_results
     ```
 
     - This command executes all test files within the `eval` directory.
@@ -160,20 +159,9 @@ Unit tests focus on testing individual units or components of the code in isolat
 
 ## Deployment on Google Agent Engine
 
-In order to inherit all dependencies of your agent you can build the wheel file of the agent and run the deployment.
-
-1.  **Build Customer Service Agent WHL file**
 
     ```bash
-    uv build --wheel --out-dir deployment
-    ```
-
-1.  **Deploy the agent to agents engine**
-    It is important to run deploy.py from within deployment folder so paths are correct
-
-    ```bash
-    cd deployment
-    uv run python deploy.py
+    adk deploy agent_engine --project=<YOUR_PROJECT_ID> --region=<YOUR_REGION> cs_agent --agent_engine_config_file=cs_agent/.agent_engine_config.json
     ```
 
 ### Testing deployment
@@ -205,36 +193,11 @@ for event in remote_agent.stream_query(
 
 ```
 
-### Alternative: Using Agent Starter Pack
 
-You can also use the [Agent Starter Pack](https://goo.gle/agent-starter-pack) to create a production-ready version of this agent with additional deployment options:
+### Cleanup
 
 ```bash
-# Create and activate a virtual environment
-python -m venv .venv && source .venv/bin/activate # On Windows: .venv\Scripts\activate
-
-# Install the starter pack and create your project
-pip install --upgrade agent-starter-pack
-agent-starter-pack create my-customer-service -a adk@customer-service
-```
-
-<details>
-<summary>⚡️ Alternative: Using uv</summary>
-
-If you have [`uv`](https://github.com/astral-sh/uv) installed, you can create and set up your project with a single command:
-```bash
-uvx agent-starter-pack create my-customer-service -a adk@customer-service
-```
-This command handles creating the project without needing to pre-install the package into a virtual environment.
-
-</details>
-
-The starter pack will prompt you to select deployment options and provides additional production-ready features including automated CI/CD deployment scripts.
-
-
-
-Cleanup
-
 export GOOGLE_CLOUD_PROJECT = <>
 export GOOGLE_CLOUD_LOCATION = <>
- uv run python deployment/cleanup.py
+uv run python deployment/cleanup.py
+```

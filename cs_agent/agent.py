@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 root_agent = LlmAgent(
     name="HelpDeskCoordinator",
-    model="gemini-2.0-flash-lite",
+    model="gemini-2.5-flash-lite",
     instruction="""
         You are the front desk customer support operator. 
 
