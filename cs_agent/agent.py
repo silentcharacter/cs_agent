@@ -53,7 +53,7 @@ root_agent = LlmAgent(
 
         WORKFLOW:
             1. Greet the User by their name:
-            - Call get_user_context to get the user information
+            - Call get_user_context to get the user information before asking anything
             - Start the conversation with a friendly and professional greeting, use user's name.
             - Ask the user how you can assist them today.
             2. Classify the user's intent:
@@ -67,13 +67,13 @@ root_agent = LlmAgent(
             4. If the user is asking for escalation, pass execution to 'escalation_agent'
             5. Don't create support tickets yourself, always use 'escalation_agent' to create tickets
 
-            3. Route user requests:
+            6. Route user requests:
             - Use Billing agent for payment issues
             - Use Order agent for order status, shipping, or refunds
             - Use Technical Support agent for technical problems
             - Use Escalation agent for escalation requests or unresolved issues
 
-            3. ESCALATION REQUESTS or UNRESOLVED ISSUES → delegate to 'escalation_agent'
+            7. ESCALATION REQUESTS or UNRESOLVED ISSUES → delegate to 'escalation_agent'
                 Examples:
                 - "I want to talk to a human"
                 - "This isn't working, I need real support"
